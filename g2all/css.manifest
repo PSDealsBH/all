@@ -1,11 +1,13 @@
 CACHE MANIFEST
+# PS_DEALS_BH Offline Cache Revision: css-fw14-b18.13-i18n-r3
 
 CACHE:
 ../index.html
 ../img.jpg
 ../style.css
-goldhen_2.4b18.12.bin
+goldhen_2.4b18.13.bin
 index.html
+i18n.js
 css\lapse.js
 css\loader.js
 css\main.js

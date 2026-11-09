@@ -1,23 +1,67 @@
 <!DOCTYPE html>
 <html manifest="700.manifest">
 <head>
-<title>PS_DEALS_BH | GoldHEN Multi FW</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PS_DEALS_BH | GoldHEN v2.4b18.13 | FW 5.05 / 7.00 - 14.00</title>
 <link rel="stylesheet" href="../style.css">
+<script src="i18n.js"></script>
+<style>
+html,body{min-height:100%;}
+body{box-sizing:border-box;min-height:100vh;margin:0;padding:32px 20px;display:flex;align-items:center;justify-content:center;font-family:Arial,sans-serif;color:#edf7ff;}
+.cache-shell{box-sizing:border-box;width:90%;max-width:760px;margin:0 auto;padding:46px 52px 34px;border:1px solid #497da1;border-radius:18px;background:rgba(5,18,31,.95);box-shadow:0 24px 70px rgba(0,0,0,.62);text-align:center;}
+.cache-kicker{margin:0 0 12px;color:#9ac9e4;font-size:12px;font-weight:bold;letter-spacing:4px;text-transform:uppercase;direction:ltr;}
+.cache-brand{margin:0;color:#fff;font-size:48px;line-height:1.08;letter-spacing:2px;direction:ltr;}
+.cache-version{margin:10px 0 30px;color:#a5d7ef;font-size:18px;letter-spacing:1px;direction:ltr;}
+.cache-preview-badge{display:none;margin:0 0 14px;padding:9px 14px;border:1px solid #b98b48;border-radius:7px;background:#30220d;color:#ffd892;font-size:12px;font-weight:bold;line-height:1.5;}
+.cache-preview-badge.is-visible{display:block;}
+.cache-status{box-sizing:border-box;min-height:235px;padding:30px 28px;border:1px solid #34617d;border-left:4px solid #cfa666;border-radius:11px;background:#081a2a;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.cache-status-label{margin:0 0 18px;color:#d5ad72;font-size:12px;font-weight:bold;letter-spacing:3px;text-transform:uppercase;}
+#msgs{margin:0;color:#eaf6ff;font-size:24px;line-height:1.55;font-weight:bold;overflow-wrap:break-word;}
+.cache-range{margin:22px 0 0;color:#8aaec4;font-size:12px;letter-spacing:1px;direction:ltr;}
+.cache-credits{margin:28px 0 0;color:#7c9db0;font-size:11px;line-height:1.8;}
+.cache-credit-label{display:block;margin-bottom:3px;}
+.cache-names{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 12px;direction:ltr;unicode-bidi:embed;}
+.cache-names a,.cache-names span{margin:0 6px;color:#9ac9e4;text-decoration:none;white-space:nowrap;}
+.cache-names a{color:#e7c68f;}
+html[dir=rtl] .cache-shell{direction:rtl;}
+html[dir=rtl] .cache-status{border-left:1px solid #34617d;border-right:4px solid #cfa666;}
+html[dir=rtl] .cache-status-label,html[dir=rtl] #msgs,html[dir=rtl] .cache-credit-label{text-align:center;direction:rtl;}
+html[dir=ltr] .cache-shell{direction:ltr;}
+@media(max-width:700px){body{padding:80px 12px 24px;align-items:flex-start}.cache-shell{width:100%;padding:34px 20px 28px}.cache-brand{font-size:35px}.cache-version{font-size:15px;margin-bottom:23px}.cache-status{min-height:210px;padding:24px 16px}#msgs{font-size:20px}.cache-names{gap:3px 8px}}
+</style>
 </head>
 <body>
 <script>
-history.replaceState(null,null,'index.html');var histlength=history.length;history.go(-histlength);
-function DLProgress(e){Percent=(Math.round(e.loaded / e.total * 100));window.msgs.innerHTML="Installing Offline Cache: " + Percent + "%";}
-function DisplayCacheProgress(){window.msgs.innerHTML="Cache Installed Successfully ✔";setTimeout(function(){window.msgs.innerHTML="Now Close And Re-Open Your Browser ...";},1500);}
+var cachePreview=!/PlayStation 4/i.test(navigator.userAgent||"")&&(window.location.search||"").indexOf("cachePreview=1")!==-1;
+if(!cachePreview){history.replaceState(null,null,'index.html');var histlength=history.length;history.go(-histlength);}
+if(window.PSDealsI18n)window.PSDealsI18n.initCachePage();
+function T(key){return window.PSDealsI18n?window.PSDealsI18n.t(key):key;}
+if(cachePreview&&window.PSDealsI18n){var previewQuery=window.location.search||"";if(previewQuery.indexOf("lang=en")!==-1)window.PSDealsI18n.applyLanguage("en");else if(previewQuery.indexOf("lang=ar")!==-1)window.PSDealsI18n.applyLanguage("ar");}
+var cacheFinished=false;
+function DLProgress(e){if(cacheFinished)return;var total=e&&e.total?e.total:0;var loaded=e&&e.loaded?e.loaded:0;var Percent=total?Math.round(loaded/total*100):0;if(Percent>100)Percent=100;window.msgs.innerHTML=T("cacheInstalling")+' <span dir="ltr">'+Percent+'%</span>';}
+function DisplayCacheProgress(isUpdate){if(cacheFinished)return;cacheFinished=true;if(!cachePreview&&isUpdate&&window.applicationCache&&window.applicationCache.swapCache){try{window.applicationCache.swapCache();}catch(ignore){}}window.msgs.innerHTML=T("cacheInstalling")+' <span dir="ltr">100%</span>';setTimeout(function(){window.msgs.innerHTML=T("cacheSuccess")+"<br>"+T("cacheReady")+"<br>GoldHEN v2.4b18.13 · Firmware 5.05 / 7.00 - 14.00<br>"+T("cacheReopen");},500);}
+if(!cachePreview&&window.applicationCache){
 window.applicationCache.addEventListener("progress",DLProgress,false);
-window.applicationCache.oncached=function(e){DisplayCacheProgress();};
-window.applicationCache.onupdateready=function(e){DisplayCacheProgress();};
-window.applicationCache.onerror=function(e){window.msgs.innerHTML="Error Installing Cache! - Clear and Re-Open Your Browser ...";};
+window.applicationCache.oncached=function(e){DisplayCacheProgress(false);};
+window.applicationCache.onupdateready=function(e){DisplayCacheProgress(true);};
+window.applicationCache.onerror=function(e){if(cacheFinished)return;window.msgs.innerHTML=T("cacheError");};
+}else if(cachePreview){setTimeout(function(){var q=window.location.search||"";var state=q.indexOf("cacheState=error")!==-1?"error":q.indexOf("cacheState=success")!==-1?"success":"progress";var ar=window.PSDealsI18n&&window.PSDealsI18n.getLanguage()==="ar";var badge=document.getElementById("cache-preview-badge");if(badge){badge.className="cache-preview-badge is-visible";badge.innerHTML=ar?"وضع معاينة تجريبي — لا يتم تثبيت الكاش الحقيقي. الحالة المعروضة: "+(state==="success"?"نجاح":state==="error"?"فشل":"تقدم"):"PREVIEW SIMULATION — no real cache is installed. Displayed state: "+state;}if(state==="error"){window.msgs.innerHTML=T("cacheError");}else if(state==="success"){DisplayCacheProgress(false);}else{DLProgress({loaded:37,total:100});}},300);}
 </script>
-<h1>PS_DEALS_BH | GoldHEN Multi FW</h1>
-<hr>
-<br>
-<h1 id=msgs style="font-size: 30px;margin-top: 77px;margin-bottom: 455px;">Starting Cache Installation...</h1>
-<h1 style="margin-top: 43px;">Special Thanks to:<a href="https://twitter.com/_AlAzif" style="color: #f31414;margin-left: 10px;margin-right: 10px;">@_AlAzif</a>ChendoChap<a href="https://x.com/Kameleonre_" style="color: #f31414;margin-left: 10px;margin-right: 10px;">@Kameleonre_</a>SiSTR0<a href="https://twitter.com/Prb29327239" style="color: #f31414;margin-left: 10px;margin-right: 10px;">@Prb29327239</a>Abc</h1>
+<main class="cache-shell">
+  <p class="cache-kicker">PS4 / MULTI-FIRMWARE HOST</p>
+  <h1 class="cache-brand">PS_DEALS_BH</h1>
+  <p class="cache-version">GoldHEN v2.4b18.13</p>
+  <p id="cache-preview-badge" class="cache-preview-badge"></p>
+  <section class="cache-status">
+    <p class="cache-status-label"><script>document.write(T("cacheInstalling"));</script></p>
+    <div id="msgs"><script>document.write(T("cacheStarting"));</script></div>
+  </section>
+  <p class="cache-range">Firmware 5.05 / 7.00 – 14.00 · Offline Cache</p>
+  <footer class="cache-credits">
+    <span class="cache-credit-label"><script>document.write(T("credits"));</script></span>
+    <span class="cache-names"><a href="https://twitter.com/_AlAzif">@_AlAzif</a><span>ChendoChap</span><a href="https://x.com/Kameleonre_">@Kameleonre_</a><span>SiSTR0</span><a href="https://twitter.com/Prb29327239">@Prb29327239</a><span>Abc</span></span>
+  </footer>
+</main>
 </body>
 </html>
