@@ -39,14 +39,20 @@ if(window.PSDealsI18n)window.PSDealsI18n.initCachePage();
 function T(key){return window.PSDealsI18n?window.PSDealsI18n.t(key):key;}
 if(cachePreview&&window.PSDealsI18n){var previewQuery=window.location.search||"";if(previewQuery.indexOf("lang=en")!==-1)window.PSDealsI18n.applyLanguage("en");else if(previewQuery.indexOf("lang=ar")!==-1)window.PSDealsI18n.applyLanguage("ar");}
 var cacheFinished=false;
-function DLProgress(e){if(cacheFinished)return;var total=e&&e.total?e.total:0;var loaded=e&&e.loaded?e.loaded:0;var Percent=total?Math.round(loaded/total*100):0;if(Percent>100)Percent=100;window.msgs.innerHTML=T("cacheInstalling")+' <span dir="ltr">'+Percent+'%</span>';}
-function DisplayCacheProgress(isUpdate){if(cacheFinished)return;cacheFinished=true;if(!cachePreview&&isUpdate&&window.applicationCache&&window.applicationCache.swapCache){try{window.applicationCache.swapCache();}catch(ignore){}}window.msgs.innerHTML=T("cacheInstalling")+' <span dir="ltr">100%</span>';setTimeout(function(){window.msgs.innerHTML=T("cacheSuccess")+"<br>"+T("cacheReady")+"<br>GoldHEN v2.4b18.13 · Firmware 5.05 / 7.00 - 14.00<br>"+T("cacheReopen");},500);}
+var cacheViewState="starting";
+var cacheViewPercent=0;
+var cachePreviewState="progress";
+function RenderPreviewBadge(){var badge=document.getElementById("cache-preview-badge");if(!badge||!cachePreview)return;var ar=window.PSDealsI18n&&window.PSDealsI18n.getLanguage()==="ar";badge.className="cache-preview-badge is-visible";badge.innerHTML=ar?"وضع معاينة تجريبي — لا يتم تثبيت الكاش الحقيقي. الحالة المعروضة: "+(cachePreviewState==="success"?"نجاح":cachePreviewState==="error"?"فشل":"تقدم"):"PREVIEW SIMULATION — no real cache is installed. Displayed state: "+cachePreviewState;}
+function RenderCacheView(){var box=document.getElementById("msgs");var label=document.getElementById("cache-status-label");if(label)label.innerHTML=T("cacheInstalling");if(!box)return;if(cacheViewState==="progress"||cacheViewState==="finishing"){box.innerHTML=T("cacheInstalling")+' <span dir="ltr">'+cacheViewPercent+'%</span>';}else if(cacheViewState==="success"){box.innerHTML=T("cacheSuccess")+"<br>"+T("cacheReady")+"<br>GoldHEN v2.4b18.13 · Firmware 5.05 / 7.00 - 14.00<br>"+T("cacheReopen");}else if(cacheViewState==="error"){box.innerHTML=T("cacheError");}else{box.innerHTML=T("cacheStarting");}RenderPreviewBadge();}
+if(window.MutationObserver){new MutationObserver(function(changes){var i;for(i=0;i<changes.length;i++){if(changes[i].attributeName==="lang"){RenderCacheView();break;}}}).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});}
+function DLProgress(e){if(cacheFinished)return;var total=e&&e.total?e.total:0;var loaded=e&&e.loaded?e.loaded:0;var Percent=total?Math.round(loaded/total*100):0;if(Percent>100)Percent=100;cacheViewState="progress";cacheViewPercent=Percent;RenderCacheView();}
+function DisplayCacheProgress(isUpdate){if(cacheFinished)return;cacheFinished=true;if(!cachePreview&&isUpdate&&window.applicationCache&&window.applicationCache.swapCache){try{window.applicationCache.swapCache();}catch(ignore){}}cacheViewState="finishing";cacheViewPercent=100;RenderCacheView();setTimeout(function(){cacheViewState="success";RenderCacheView();},500);}
 if(!cachePreview&&window.applicationCache){
 window.applicationCache.addEventListener("progress",DLProgress,false);
 window.applicationCache.oncached=function(e){DisplayCacheProgress(false);};
 window.applicationCache.onupdateready=function(e){DisplayCacheProgress(true);};
-window.applicationCache.onerror=function(e){if(cacheFinished)return;window.msgs.innerHTML=T("cacheError");};
-}else if(cachePreview){setTimeout(function(){var q=window.location.search||"";var state=q.indexOf("cacheState=error")!==-1?"error":q.indexOf("cacheState=success")!==-1?"success":"progress";var ar=window.PSDealsI18n&&window.PSDealsI18n.getLanguage()==="ar";var badge=document.getElementById("cache-preview-badge");if(badge){badge.className="cache-preview-badge is-visible";badge.innerHTML=ar?"وضع معاينة تجريبي — لا يتم تثبيت الكاش الحقيقي. الحالة المعروضة: "+(state==="success"?"نجاح":state==="error"?"فشل":"تقدم"):"PREVIEW SIMULATION — no real cache is installed. Displayed state: "+state;}if(state==="error"){window.msgs.innerHTML=T("cacheError");}else if(state==="success"){DisplayCacheProgress(false);}else{DLProgress({loaded:37,total:100});}},300);}
+window.applicationCache.onerror=function(e){if(cacheFinished)return;cacheViewState="error";RenderCacheView();};
+}else if(cachePreview){setTimeout(function(){var q=window.location.search||"";cachePreviewState=q.indexOf("cacheState=error")!==-1?"error":q.indexOf("cacheState=success")!==-1?"success":"progress";if(cachePreviewState==="error"){cacheViewState="error";RenderCacheView();}else if(cachePreviewState==="success"){DisplayCacheProgress(false);}else{DLProgress({loaded:37,total:100});}},300);}
 </script>
 <main class="cache-shell">
   <p class="cache-kicker">PS4 / MULTI-FIRMWARE HOST</p>
@@ -54,7 +60,7 @@ window.applicationCache.onerror=function(e){if(cacheFinished)return;window.msgs.
   <p class="cache-version">GoldHEN v2.4b18.13</p>
   <p id="cache-preview-badge" class="cache-preview-badge"></p>
   <section class="cache-status">
-    <p class="cache-status-label"><script>document.write(T("cacheInstalling"));</script></p>
+    <p id="cache-status-label" class="cache-status-label"><script>document.write(T("cacheInstalling"));</script></p>
     <div id="msgs"><script>document.write(T("cacheStarting"));</script></div>
   </section>
   <p class="cache-range">Firmware 5.05 / 7.00 – 14.00 · Offline Cache</p>
